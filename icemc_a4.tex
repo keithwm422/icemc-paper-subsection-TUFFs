@@ -1,0 +1,145 @@
+   
+\documentclass[12pt]{article}
+\renewcommand{\baselinestretch}{1.05}
+\usepackage{amsmath,amsthm,verbatim,amssymb,amsfonts,amscd, graphicx}
+\usepackage{graphics}
+\linespread{1.5}
+\topmargin0.0cm
+\headheight0.0cm
+\headsep0.0cm
+\oddsidemargin0.0cm
+\textheight23.0cm
+\textwidth16.5cm
+\footskip1.0cm
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}
+\newtheorem{corollary}{Corollary}
+\newtheorem{lemma}{Lemma}
+\newtheorem{proposition}{Proposition}
+\newtheorem*{surfacecor}{Corollary 1}
+\newtheorem{conjecture}{Conjecture} 
+\newtheorem{question}{Question} 
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\usepackage{graphicx}
+\graphicspath{{}}
+\usepackage{cite}
+%\usepackage[backend=bibtex]{biblatex}
+%\addbibresource{listb.bib}
+ \begin{document}
+ 
+
+\title{Icemc for ANITA Flight Four}
+\author{Keith McBride and Linda Cremonesi}
+\maketitle
+\begin{abstract}
+	In this section, answer four things: 1) why this paper/topic is interesting 2) what question this paper is answering 3) what approach it uses to answer that question 4) results of the approach. These do not have to be in this order.
+\end{abstract}
+\tableofcontents
+\pagebreak
+\section{Introduction}
+\hspace{0.2in}
+  The icemc software has recently been published in the following paper. Its main goal was to simulate the third flight of the ANITA experiment.  However, many new components were introduced to the fourth flight. The most important was the TUFFs, or Tunable Universal Filter Front-end and is discussed in detail in Oindree's paper. This paper outlines those necessary components and shows how they fit into the simulation. The last section will illustrate the next steps and changes that are needed.
+%\begin{figure}
+%	\includegraphics[scale=0.75]{"CR spectrum"}
+%	\centering
+%	\caption{The Cosmic Ray spectrum from current efforts labelled. Note the different features and the flux at the highest energies.  ~\cite{Olive:2016xmw}}
+%	\centering
+%\end{figure} 
+\section{icemc overview}
+\hspace{0.2in}
+The simulation monte carlo software to model UHE neutrinos and their propagation and detection by the airborne array of antennas known as ANITA is called icemc. In other words, icemc attempts to simulate ANITA's detection of the Askaryan pulse produced by neutrinos of energies above $10^{18}$eV. The triggering and digitizing of ANITA are simulated based on data from detectors and flight. This article discusses the recent updates made to include the TUFFs in these components of ANITA's hardware. Presented at the end is a comparison of the simulation to hardware data. 
+\section{TUFFs Overview and outline of paper}
+\hspace{0.2in} 
+The TUFFs were implemented on the ANITA-IV flight to reduce the anthropegnic continous-wave (CW) noise that plagued the third flight of ANITA. The ANITA-IV flight used a hierarchy of triggers in LCP and RCP (much like ANITA-III) with the addition of these TUFF notches. The TUFF notches are tunable and were moved and toggled throughout the flight. An accurate representation of the TUFFs in icemc involves time-dependent TUFF convolution with signal and noise waveforms. This was accomplished by loading all TUFF configurations (list of notch positions and on/off status) and their UTC time used during flight into the simulation. Amplification by the TUFFs was included in their input and is ~45dB. Figure \ref{fig:tuffexample} shows one of the most used TUFF configurations during flight as an example. A check of these updates to icemc is shown in the Digitization Path section. With the TUFFs included, the thresholds for triggering needed to be readjusted to account for TUFF noise. These updates are discussed in the Trigger Path section. As these updates were made, tests were done with icemc to see the effective volume change. This is shown in the bots section. Finally, with the implementation of TUFFs complete, simulation and data are compared in the Trigger Efficiency Scan section. 
+\begin{figure}
+    \centering
+	\includegraphics[scale=0.35]{"config_P_response_freq"}
+	\caption{Frequency-Magnitude graph of the configuration of all notches on. The response of the TUFF includes a $\sim45$dB amplification for all frequencies and $\sim13$dB attenuation at the notch frequencies. }
+\label{fig:tuffexample}
+\end{figure}
+
+
+\section{Including TUFFs in Digitizer Path}
+\hspace{0.2in} 
+Digitization of the signal in icemc includes multiple levels. For ANITA-3, the digitization of the signal was through a switch capacitor array. The same can be said for ANITA-4 with the main difference being the notches. 
+The signal once in the digitization path has thermal noise added to it following the procedure of ANITA-3 simulation with adjustments to the thermal noise factor discussed in the trigger path section. The figure below shows a flowchart for this in simulation, with TUFFs labelled. 
+The main change in this part of icemc was including the TUFFs. Once loaded, configuration switching was tested. In order to clearly see in randomly selected events that the notch position changed or toggled, CW was added at the notch frequency of $460$MHz. This was the default position of one of the notches and was toggled multiple times during flight. Figure \ref{fig:cw} shows two frequency-magnitude diagrams with the CW apparent in the spectrum in one plot and not in the next due to the notch toggling (configuration changed).
+
+\begin{figure}
+    \centering
+	\includegraphics[scale=0.35]{"CW_notches_illustration/notch_on_notch_off_cw_460"}
+	\caption{Left: Frequency-Magnitude graph of thermal noise and CW at 460 MHz with notches on at 260, 375, and 460 MHz (configuration P). Right: Frequency-Magnitude graph of thermal noise and CW at 460 MHz with notches on at 260 and 375 MHz (configuration B). These plots together illustrate that the simulation's TUFF switch between events based on time of event matching flight data TUFF status.}
+    \label{fig:cw}
+\end{figure}
+%stuff below needs to move to a different sectiion
+
+Plots of TUFF configurations?
+%\subsection{Checks of the changes to the code}
+%\hspace{0.2in} 
+%Notches checked with artificial CW pulse. Notches have per channel tuff %convolution with antenna response.
+
+
+\section{TUFFs in Trigger Path}
+\hspace{0.2in} 
+The ANITA-3 thermal noise was determined by some data in runs of "quiet time". The data taken in the fourth flight agrees with this in simulation, up to a factor of 0.9, as shown in figure \ref{fig:thermal_noise}. Thus, the code was updated to have a "thermal noise factor" of 0.9 in simulating ANITA-4 runs.
+\begin{figure}
+	\centering
+	\includegraphics[scale=0.35]{"thermal_noise_hits_plotting/RMS_fVolts_rms_only_antennas"}
+	\caption{Normalized histograms of thermal noise factors in simulation and data from ANITA-4. The 0.8 factor was assumed before comparison to the data, however the 0.9 factor matches better. This factor is multiplied by the magnitude used in ANITA-3 simulation. }
+	    \label{fig:thermal_noise}
+\end{figure}
+
+Triggering in ANITA-4 is similar to ANITA-3. Time-domain diode responses are convolved with the signal and compared to a channel-specific threshold, set by a diode rms value. The diode rms factor that sets the level for a L0 trigger is calculated from noise simulations at the beginning of an icemc run. New to ANITA-4, though, is this rms factor including the TUFFs in the simulation of the noise events. Hence the TUFFs are included as a noise 
+factor in triggering. 
+
+The triggering threshold is set by the configuration the TUFF is in. The list of configurations shown in table \ref{tab:configs} includes the notches that are on and for how long. The histogram in figure \ref{fig:dioderms} illustrates the dioderms for each configuration. All TUFF configuration responses are loaded into an array and the dioderms was expanded to include a dimension with TUFF configuration variable. Then, the rms for the current configuration can be used in the L0 trigger. It was decided to include each configuration used in flight for rms calculation based on the roughly equal quantities of time spent in 3 configurations. 
+The other triggering was the same between flights, so the TUFFs convolution into the noise and rms values was an update to icemc for ANITA-4 simulation.
+
+\begin{table}
+\label{tab:configs}
+\begin{center}
+\caption{TUFF configurations}
+\begin{tabular}{c|c|c}
+Configuration & Notch combination (MHz) & total duration \\
+\hline
+A & [$260$] & $10$ minutes \\
+B & [$260,375$] & $> 331$ hours \\
+C & [$260,460$] & $18$ minutes \\
+G & [$260,385$] & $77$ hours \\
+O & [$260,365$] & $112$ hours \\
+P & [$260,375,460$] & $110$ hours
+\end{tabular}
+\end{center}
+\end{table}
+
+\begin{figure}
+\centering
+	\includegraphics[scale=0.25]{"diodeRMS_plots/diode_rms_histogram_ABCP"}
+	\caption{Using 100 icemc events with no signal simulated, this histogram shows the different dioderms distributions for TUFF configurations. The peaks fall on top of each other for B, G, and O configurations so only B is plotted. }
+	\label{fig:dioderms}
+\end{figure}
+\section{Bots and QC}
+\hspace{0.20in}
+The most telling way to test a change in the simulation is to compare the effective volume. A quality control was set up to automatically run icemc at specific energies of 20.5 and 21 with 20 million neutrinos every day and report the effective volume and other useful information to the hackers. A couple notable examples were commits that broke the simulation or effective volumes drastically changing. This happened when the TUFFs were intitially put as an option for the trigger path. The outputs rose by a factor of 1.5 which was unexpected. Output trigger variables showed that events that shouldn't trigger were triggering. In this example, the dioderms was found to have not been correctly adjusted to include the TUFFs. In this way, the Quality Control was useful in debugging and checking the updates made. 
+\section{Trigger Efficiency Scan and Money Plot}
+\hspace{0.20in}
+Once the TUFFs were accurately being utilized in icemc it could be used for analysis purposes. A comprehensive check of the simulation involves comparing the triggering to data. Mainly, one produces the trigger efficiency versus SNR plot. Producing this plot involved measuring an injected signal (shown in figure \ref{fig:signal}) before and after the triggering and digitizing paths in the ANITA experiment. These are compared with the same injected signal passed through the simulations of the triggering and digitizing of icemc. To be sure discrepencies of the code with the experiment were minimal, added attenuations and the Hybrid were also put into icemc. In this Trigger Efficiency Scan, multiple checks were set up. These include the following plots: trigger efficiency vs attentuation (figure) and snr vs attenuation (figure). One expects at very low attenuation of injected signal that the trigger efficiency goes to $1$ and the SNR rises to a maximum. At high attenuation, $0$ and minimum are approached respectively. As shown in figure below, the desired behavior is observed. The "money plot" appears in figure below along with data. 
+\begin{figure}
+\centering
+	\includegraphics[scale=0.25]{"signal_from_pulser/pulser_signal_for_trigeffscan"}
+	\caption{Injected signal from pulser used in the payload in testing trigger efficiency and SNR.}
+	\label{fig:signal}
+\end{figure}
+%\begin{figure}
+%\centering
+%	\includegraphics[scale=0.25]{""}
+%	\caption{}
+%	\label{fig:dioderms}
+%\end{figure}
+%\section{References}
+%\bibliography{reflist}{}
+%\bibliographystyle{unsrt}
+ 
+ 
+\end{document}

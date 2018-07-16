@@ -1,0 +1,23 @@
+\subsection{TUFFs}
+\label{subsec:ANITA_tuffs}
+
+To alleviate the anthropogenic noise observed in ANITA-3 that caused
+significant amounts of deadtime, ANITA-IV added the Tunable Universal
+Filter Frontend, or TUFF, board. It uses three notches to attenuate
+the gain by a maximum of 13dB around the notch
+frequency~\cite{Allison:2017vtk}. These notches are tunable but
+default to 260, 375, and 460MHz using LCR circuits. Activating more
+than one notch and tuning of a notch to a non-default frequency is
+considered a configuration. There were seven unique configurations for
+the ANITA-4 flight and their activation can be implemented in
+\icemc. The response of the trigger for the configuration when all
+notches are on and at default frequencies is plotted in
+Figure~\ref{fig:TUFFs}. The response per channel for a configuration
+depending on the payload time is loaded into icemc and convolved with
+the trigger and digitizer impulse responses. 
+\begin{figure}
+  \centering
+ \includegraphics[width=0.45\linewidth] {./Figs/config_P_response_freq.png} 
+  \caption{The TUFF response in frequency domain. dB vs frequency. The dips in the response clearly mark the 260, 375, and 460 MHz notches turned on in this configuration~\cite{Allison:2017vtk}.}
+  \label{fig:TUFFs}
+\end{figure}

@@ -1,0 +1,7 @@
+\contentsline {section}{\numberline {1}Introduction}{2}
+\contentsline {section}{\numberline {2}icemc overview}{2}
+\contentsline {section}{\numberline {3}TUFFs Overview and outline of paper}{2}
+\contentsline {section}{\numberline {4}Including TUFFs in Digitizer Path}{3}
+\contentsline {section}{\numberline {5}TUFFs in Trigger Path}{4}
+\contentsline {section}{\numberline {6}Bots and QC}{6}
+\contentsline {section}{\numberline {7}Trigger Efficiency Scan and Money Plot}{7}
